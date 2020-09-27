@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <FrameLayout android:layout_height="match_parent"
+        android:layout_width="0dp" 
+        android:id="@+id/left_layout"
+        android:layout_weight="1">
+    <ListView
+        android:id="@+id/lstWords1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </ListView>
+    </FrameLayout>
+
+    <TableLayout android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:id="@+id/right_layout"
+        android:layout_weight="1">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="释义："
+            android:textSize="20dp"
+            android:textColor="@color/colorPrimaryDark" />
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtMeaning1"
+            android:textSize="30dp"
+        android:textColor="@color/colorPrimaryDark" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="示例："
+            android:textSize="20dp"
+            android:textColor="@color/colorPrimaryDark" />
+        <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/txtSample1"
+            android:textSize="30dp"
+        android:textColor="@color/colorPrimaryDark" />
+    </TableLayout>
+
+
+</LinearLayout>
