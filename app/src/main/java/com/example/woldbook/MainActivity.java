@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    WordsDBHelper mDbHelper;
+    public static WordsDBHelper mDbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
         String strType = "";
         while (iNumber < c.getCount()){
             Map<String,String> map = new HashMap<String, String>();
-            map.put("_ID", c.getString(c.getColumnIndex("_id")));
+            map.put("_ID", c.getString(c.getColumnIndex("id")));
             map.put("COLUMN_NAME_WORD", c.getString(c.getColumnIndex("word")));
             map.put("COLUMN_NAME_MEANING",  c.getString(c.getColumnIndex("meaning")));
             map.put("COLUMN_NAME_SAMPLE",  c.getString(c.getColumnIndex("sample")));
@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setWordsListView(ArrayList<Map<String, String>> items){
+
         /*
         SimpleAdapter adapter = new SimpleAdapter(this, items, R.layout.item,
                 new String[]{"_ID","COLUMN_NAME_WORD", "COLUMN_NAME_MEANING", "COLUMN_NAME_SAMPLE"},
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> list,View view, int i, long l) {
                 Map<String,String> temp= (Map<String, String>) list.getItemAtPosition(i);
                 String w = temp.get("COLUMN_NAME_WORD");
-                ArrayList<Map<String, String>> items=SearchUseSql(w);
+                ArrayList<Map<String, String>> items=SearchUseSql_full(w);
                 // items=Search(txtSearchWord);
                 if(items.size()>0) {
                     Bundle bundle=new Bundle();
@@ -142,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
+
         });
+
 
     }
 
@@ -240,7 +243,10 @@ public class MainActivity extends AppCompatActivity {
                 //既可以使用Sql语句插入，也可以使用使用insert方法插入
                 InsertUserSql(strWord, strMeaning, strSample);
                 ArrayList<Map<String, String>> items=getAll();
-                setWordsListView(items);
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                    setWordsListView(items);
+                else
+                    setWordsListViewland(getAll());
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
@@ -250,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void DeleteUseSql(String strId) {
-        String sql="delete from words where _id='"+strId+"'";
+        String sql="delete from words where id='"+strId+"'";
         //Gets the data repository in write mode*/
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
         db.execSQL(sql);
@@ -264,7 +270,10 @@ public class MainActivity extends AppCompatActivity {
                 //既可以使用Sql语句删除，也可以使用使用delete方法删除
                 DeleteUseSql(strId);
                 //Delete(strId);
-                setWordsListView(getAll());
+                if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                    setWordsListView(getAll());
+                else
+                    setWordsListViewland(getAll());
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
             @Override
@@ -295,7 +304,10 @@ public class MainActivity extends AppCompatActivity {
                         //既可以使用Sql语句更新，也可以使用使用update方法更新
                         UpdateUseSql(strId, strNewWord, strNewMeaning, strNewSample);
                         //  Update(strId, strNewWord, strNewMeaning, strNewSample);
-                        setWordsListView(getAll());
+                        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+                            setWordsListView(getAll());
+                        else
+                            setWordsListViewland(getAll());
                     }
                 }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
                     @Override
@@ -304,6 +316,13 @@ public class MainActivity extends AppCompatActivity {
         }).create().show();
     }
 
+
+    private ArrayList<Map<String, String>> SearchUseSql_full(String strWordSearch) {
+        SQLiteDatabase db = mDbHelper.getReadableDatabase();
+        String sql="select * from words where word like ? order by word desc";
+        Cursor c=db.rawQuery(sql,new String[]{strWordSearch});
+        return ConvertCursor2List(c);
+    }
 
     private ArrayList<Map<String, String>> SearchUseSql(String strWordSearch) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
@@ -317,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
         while (c.moveToNext())
         {
             Map<String, String> map = new HashMap<String, String>();
-            map.put("_ID", c.getString(c.getColumnIndex("_id")));
+            map.put("_ID", c.getString(c.getColumnIndex("id")));
             map.put("COLUMN_NAME_WORD", c.getString(c.getColumnIndex("word")));
             map.put("COLUMN_NAME_MEANING",  c.getString(c.getColumnIndex("meaning")));
             map.put("COLUMN_NAME_SAMPLE",  c.getString(c.getColumnIndex("sample")));
@@ -330,7 +349,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void SearchDialog() {
         final TableLayout tableLayout = (TableLayout) getLayoutInflater().inflate(R.layout.searchterm, null);
-        new AlertDialog.Builder(this).setTitle("新增单词").setView(tableLayout).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setTitle("查找单词").setView(tableLayout).setPositiveButton("确定", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 String txtSearchWord=((EditText)tableLayout.findViewById(R.id.txtSearchWord)).getText().toString();
